@@ -1,9 +1,17 @@
 import { Request, Response, NextFunction } from 'express'
+import { findByApiKey } from '../repositories/companyRepository.js'
 
-function verifyApiKey(req: Request, res: Response, next: NextFunction) {
-  const apiKey: string = req.header('apiKey')
+async function verifyApiKey(req: Request, res: Response, next: NextFunction) {
+  const apiKey: string = req.header('x-api-key')
 
-  if (apiKey === undefined || apiKey.trim() === '') return res.sendStatus(401)
+  if (apiKey === undefined || apiKey.trim() === '')
+    throw { code: 400, message: 'api key inválido ou inexistente' }
+
+  const key = await findByApiKey(apiKey)
+
+  if (key === undefined) throw { code: 401, message: 'api key não cadastrada' }
+
+  res.locals.apiKey = key
 
   next()
 }

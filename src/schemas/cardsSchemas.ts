@@ -1,6 +1,7 @@
 import joi from 'joi'
 
 const create = joi.object({
+  employeeId: joi.number().greater(0).required(),
   type: joi
     .string()
     .valid('groceries', 'restaurants', 'transport', 'education', 'health')

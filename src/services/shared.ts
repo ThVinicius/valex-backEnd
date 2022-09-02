@@ -1,8 +1,16 @@
 import dayjs from 'dayjs'
 import bcrypt from 'bcrypt'
+import Cryptr from 'cryptr'
+import dotenv from 'dotenv'
 import * as cardsRepository from '../repositories/cardRepository'
 import * as rechargeRepository from '../repositories/rechargeRepository'
 import * as paymentRepository from '../repositories/paymentRepository'
+
+dotenv.config()
+
+const secretKey: string = process.env.CRYPTR_SECRET!
+
+const cryptr = new Cryptr(secretKey)
 
 function validateDate(expirationDate: string) {
   const now = dayjs().format('MM/YY')
@@ -53,11 +61,19 @@ async function getStatement(cardId: number) {
   return { balance, transactions, recharges }
 }
 
+function validateSecurityCode(securityCode: string, cardSecurityCode: string) {
+  const decrypt: string = cryptr.decrypt(cardSecurityCode)
+
+  if (decrypt !== securityCode)
+    throw { code: 401, message: 'código de segurança incorreto' }
+}
+
 export {
   validateDate,
   validateCard,
   validateIsActiveCard,
   validateBlocked,
   validatePassword,
-  getStatement
+  getStatement,
+  validateSecurityCode
 }

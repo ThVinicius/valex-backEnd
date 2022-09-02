@@ -29,11 +29,11 @@ route.patch('/blocked', schemaValidator(cardsSchemas.blockedAndUnlock), blocked)
 
 route.patch('/unlock', schemaValidator(cardsSchemas.blockedAndUnlock), unlock)
 
-const getParams = true
+const isParams = true
 
 route.get(
   '/statement/:cardId',
-  schemaValidator(paramsSchemas.cardId, getParams),
+  schemaValidator(paramsSchemas.cardId, isParams),
   statement
 )
 

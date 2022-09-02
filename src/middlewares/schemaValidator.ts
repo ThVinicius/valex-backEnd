@@ -3,12 +3,12 @@ import { ObjectSchema } from 'joi'
 
 export default function schemaValidator(
   schema: ObjectSchema,
-  params: boolean = false
+  isParams: boolean = false
 ) {
   let payload
 
   return (req: Request, res: Response, next: NextFunction) => {
-    if (params) payload = req.params
+    if (isParams) payload = req.params
     else payload = req.body
 
     const { error } = schema.validate(payload, { abortEarly: true })

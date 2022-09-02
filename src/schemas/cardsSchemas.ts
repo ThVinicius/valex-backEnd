@@ -1,4 +1,5 @@
 import joi from 'joi'
+import { cvcRegex, passwordRegex } from './regex'
 
 const create = joi.object({
   employeeId: joi.number().greater(0).required(),
@@ -7,9 +8,6 @@ const create = joi.object({
     .valid('groceries', 'restaurant', 'transport', 'education', 'health')
     .required()
 })
-
-const cvcRegex = /^\d{3}$/
-const passwordRegex = /^\d{4}$/
 
 const activate = joi.object({
   cardId: joi.number().greater(0).required(),

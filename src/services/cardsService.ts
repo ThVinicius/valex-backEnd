@@ -16,7 +16,8 @@ import {
   validateCard,
   validatePassword,
   validateIsActiveCard,
-  getStatement
+  getStatement,
+  validateSecurityCode
 } from './shared'
 
 dotenv.config()
@@ -83,13 +84,6 @@ async function hanleCard(cardId: number, securityCode: string) {
   validateSecurityCode(securityCode, card.securityCode)
 
   validateDate(card.expirationDate)
-}
-
-function validateSecurityCode(securityCode: string, cardSecurityCode: string) {
-  const decrypt: string = cryptr.decrypt(securityCode)
-
-  if (decrypt !== cardSecurityCode)
-    throw { code: 401, message: 'código de segurança incorreto' }
 }
 
 async function validateCardAndReturn(cardId: number) {

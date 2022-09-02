@@ -16,3 +16,34 @@ export async function create(req: Request, res: Response) {
 
   return res.sendStatus(201)
 }
+
+export async function online(req: Request, res: Response) {
+  const {
+    number,
+    cardholderName,
+    expirationDate,
+    securityCode,
+    businessId,
+    amount
+  }: {
+    number: string
+    cardholderName: string
+    expirationDate: string
+    securityCode: string
+    businessId: number
+    amount: number
+  } = req.body
+
+  const { cardId } = await paymentsService.hanlePaymentOnline(
+    number,
+    cardholderName,
+    expirationDate,
+    securityCode,
+    businessId,
+    amount
+  )
+
+  await paymentsService.insert(cardId, businessId, amount)
+
+  return res.sendStatus(201)
+}

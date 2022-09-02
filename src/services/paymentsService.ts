@@ -3,10 +3,12 @@ import {
   validateIsActiveCard,
   validateDate,
   validatePassword,
-  getStatement
+  getStatement,
+  validateSecurityCode
 } from './shared'
 import * as businessRepository from '../repositories/businessRepository'
 import * as paymentsRepository from '../repositories/paymentRepository'
+import * as cardsRepository from '../repositories/cardRepository'
 
 async function hanlePayment(
   cardId: number,
@@ -50,7 +52,7 @@ function validateCardType(cardType: string, businessType: string) {
   if (cardType !== businessType)
     throw {
       code: 401,
-      message: `os cartões do tipo ${cardType} só transacionar com estabelecimentos do mesmo tipo`
+      message: `os cartões do tipo ${cardType} só transacionam com estabelecimentos do mesmo tipo`
     }
 }
 
@@ -63,4 +65,52 @@ async function insert(cardId: number, businessId: number, amount: number) {
   await paymentsRepository.insert({ cardId, businessId, amount })
 }
 
-export default { hanlePayment, insert }
+async function hanlePaymentOnline(
+  number: string,
+  cardholderName: string,
+  expirationDate: string,
+  securityCode: string,
+  businessId: number,
+  amount: number
+) {
+  const card = await validateCardPaymentOnline(
+    number,
+    cardholderName,
+    expirationDate
+  )
+
+  validateSecurityCode(securityCode, card.securityCode)
+
+  validateDate(card.expirationDate)
+
+  validateBlockedCard(card.isBlocked)
+
+  const business = await getBusiness(businessId)
+
+  validateCardType(card.type, business.type)
+
+  const { balance } = await getStatement(card.id)
+
+  validateAmount(amount, balance)
+
+  return { cardId: card.id }
+}
+
+async function validateCardPaymentOnline(
+  number: string,
+  cardholderName: string,
+  expirationDate: string
+) {
+  const card = await cardsRepository.findByCardDetails(
+    number,
+    cardholderName,
+    expirationDate
+  )
+
+  if (card === undefined)
+    throw { code: 404, message: 'cartão não cadastrado ou dados incorretos' }
+
+  return card
+}
+
+export default { hanlePayment, insert, hanlePaymentOnline }

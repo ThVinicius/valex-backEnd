@@ -8,6 +8,9 @@ export const errorHandling: ErrorRequestHandler = (error, req, res, next) => {
     case 401:
       return res.status(401).send(error.message)
 
+    case 402:
+      return res.status(402).send(error.message)
+
     case 403:
       return res.status(403).send(error.message)
 

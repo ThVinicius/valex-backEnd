@@ -1,5 +1,9 @@
-import bcrypt from 'bcrypt'
-import { validateCard, validateDate } from './shared'
+import {
+  validateCard,
+  validateIsActiveCard,
+  validateDate,
+  validatePassword
+} from './shared'
 import * as businessRepository from '../repositories/businessRepository'
 import * as rechargeRepository from '../repositories/rechargeRepository'
 import * as paymentsRepository from '../repositories/paymentRepository'
@@ -11,6 +15,8 @@ async function hanlePayment(
   paymentAmount: number
 ) {
   const card = await validateCard(cardId)
+
+  validateIsActiveCard(card.password)
 
   validatePassword(password, card.password!)
 
@@ -29,12 +35,6 @@ async function hanlePayment(
 
 function validateBlockedCard(blocked: boolean) {
   if (blocked) throw { code: 401, message: 'cartão bloqueado' }
-}
-
-function validatePassword(password: string, userPassword: string) {
-  const compare = bcrypt.compareSync(password, userPassword)
-
-  if (!compare) throw { code: 401, message: 'senha incorreta' }
 }
 
 async function getBusiness(businessId: number) {

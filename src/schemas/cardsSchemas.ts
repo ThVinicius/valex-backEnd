@@ -26,7 +26,7 @@ const balanceAndTransactions = joi.object({
   cardId: joi.number().greater(0).required()
 })
 
-const lockAndUnlock = joi.object({
+const blockedAndUnlock = joi.object({
   cardId: joi.number().greater(0).required(),
   password: joi.string().length(4).pattern(passwordRegex).required()
 })
@@ -36,5 +36,5 @@ export default {
   activate,
   getCards,
   balanceAndTransactions,
-  lockAndUnlock
+  blockedAndUnlock
 }

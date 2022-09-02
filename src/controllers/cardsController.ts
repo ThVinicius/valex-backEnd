@@ -62,3 +62,23 @@ export async function get(req: Request, res: Response) {
 
   return res.status(200).send(cardsEmployee)
 }
+
+export async function blocked(req: Request, res: Response) {
+  const { cardId, password }: { cardId: number; password: string } = req.body
+
+  await cardsService.hanleBlocked(cardId, password)
+
+  await cardsService.blocked(cardId)
+
+  return res.sendStatus(200)
+}
+
+export async function unlock(req: Request, res: Response) {
+  const { cardId, password }: { cardId: number; password: string } = req.body
+
+  await cardsService.hanleUnlock(cardId, password)
+
+  await cardsService.unlock(cardId)
+
+  return res.sendStatus(200)
+}

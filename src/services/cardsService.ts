@@ -10,7 +10,13 @@ import {
   CardInsertData,
   CardUpdateData
 } from '../repositories/cardRepository'
-import { validateDate } from './shared'
+import {
+  validateDate,
+  validateBlocked,
+  validateCard,
+  validatePassword,
+  validateIsActiveCard
+} from './shared'
 
 dotenv.config()
 
@@ -128,6 +134,45 @@ async function getAllCardsByEmployee(employeeId: number, password: string) {
   return { cards }
 }
 
+async function hanleBlocked(cardId: number, password: string) {
+  const card = await validateCard(cardId)
+
+  validateIsActiveCard(card.password)
+
+  validatePassword(password, card.password!)
+
+  validateDate(card.expirationDate)
+
+  const error = { code: 409, message: 'esse cartão já esta bloqueado' }
+
+  validateBlocked(card.isBlocked, error)
+}
+
+async function hanleUnlock(cardId: number, password: string) {
+  const card = await validateCard(cardId)
+
+  validateIsActiveCard(card.password)
+
+  validatePassword(password, card.password!)
+
+  validateDate(card.expirationDate)
+
+  validateUnlock(card.isBlocked)
+}
+
+function validateUnlock(isBlocked: boolean) {
+  if (!isBlocked)
+    throw { code: 409, message: 'esse cartão já esta desbloqueado' }
+}
+
+async function unlock(cardId: number) {
+  await cardRepository.update(cardId, { isBlocked: false })
+}
+
+async function blocked(cardId: number) {
+  await cardRepository.update(cardId, { isBlocked: true })
+}
+
 export default {
   creditCardNumber,
   creditCardCVV,
@@ -138,5 +183,8 @@ export default {
   cryptPassword,
   update,
   getAllCardsByEmployee,
-  validateDate
+  hanleBlocked,
+  blocked,
+  hanleUnlock,
+  unlock
 }

@@ -1,4 +1,5 @@
 import dayjs from 'dayjs'
+import bcrypt from 'bcrypt'
 import * as cardsRepository from '../repositories/cardRepository'
 
 function validateDate(expirationDate: string) {
@@ -15,10 +16,31 @@ async function validateCard(cardId: number) {
 
   if (card === undefined) throw { code: 404, message: 'cartão não cadastrado' }
 
-  if (card.password === null)
-    throw { code: 403, message: 'Esse cartão não esta ativado' }
-
   return card
 }
 
-export { validateDate, validateCard }
+function validateIsActiveCard(password: string | undefined) {
+  if (password === null)
+    throw { code: 403, message: 'Esse cartão não esta ativado' }
+}
+
+function validatePassword(password: string, userPassword: string) {
+  const compare = bcrypt.compareSync(password, userPassword!)
+
+  if (!compare) throw { code: 401, message: 'senha incorreta' }
+}
+
+function validateBlocked(
+  blocked: boolean,
+  error: { code: number; message: string }
+) {
+  if (blocked) throw error
+}
+
+export {
+  validateDate,
+  validateCard,
+  validateIsActiveCard,
+  validateBlocked,
+  validatePassword
+}

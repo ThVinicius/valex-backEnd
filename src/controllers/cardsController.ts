@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
-import cardsService from '../services/cardsService.js'
-import { TransactionTypes } from '../repositories/cardRepository.js'
+import cardsService from '../services/cardsService'
+import { TransactionTypes } from '../repositories/cardRepository'
 
 export async function createCard(req: Request, res: Response) {
   const { employeeId, type }: { employeeId: number; type: TransactionTypes } =
@@ -11,9 +11,9 @@ export async function createCard(req: Request, res: Response) {
     type
   )
 
-  const number = cardsService.creditCardNumber()
-  const securityCode = cardsService.creditCardCVV()
-  const expirationDate = cardsService.expirationDate()
+  const number: string = cardsService.creditCardNumber()
+  const securityCode: string = cardsService.creditCardCVV()
+  const expirationDate: string = cardsService.expirationDate()
 
   const payload = {
     employeeId,
@@ -21,9 +21,9 @@ export async function createCard(req: Request, res: Response) {
     cardholderName,
     securityCode,
     expirationDate,
-    password: null,
+    password: undefined,
     isVirtual: false,
-    originalCardId: null,
+    originalCardId: undefined,
     isBlocked: false,
     type
   }
@@ -31,4 +31,34 @@ export async function createCard(req: Request, res: Response) {
   await cardsService.insert(payload)
 
   return res.sendStatus(201)
+}
+
+export async function activate(req: Request, res: Response) {
+  const {
+    cardId,
+    securityCode,
+    password
+  }: { cardId: number; securityCode: string; password: string } = req.body
+
+  await cardsService.hanleCard(cardId, securityCode)
+
+  const cryptPassword = cardsService.cryptPassword(password)
+
+  const cardData = { password: cryptPassword }
+
+  await cardsService.update(cardId, cardData)
+
+  return res.sendStatus(200)
+}
+
+export async function get(req: Request, res: Response) {
+  const { employeeId, password }: { employeeId: number; password: string } =
+    req.body
+
+  const cardsEmployee = await cardsService.getAllCardsByEmployee(
+    employeeId,
+    password
+  )
+
+  return res.status(200).send(cardsEmployee)
 }

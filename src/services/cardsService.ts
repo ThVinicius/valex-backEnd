@@ -1,18 +1,30 @@
 import { faker } from '@faker-js/faker'
+import Cryptr from 'cryptr'
+import bcrypt from 'bcrypt'
+import dotenv from 'dotenv'
 import dayjs from 'dayjs'
-import * as employeeRepository from '../repositories/employeeRepository.js'
-import * as cardRepository from '../repositories/cardRepository.js'
+import * as employeeRepository from '../repositories/employeeRepository'
+import * as cardRepository from '../repositories/cardRepository'
 import {
   TransactionTypes,
-  CardInsertData
-} from '../repositories/cardRepository.js'
+  CardInsertData,
+  CardUpdateData
+} from '../repositories/cardRepository'
+
+dotenv.config()
+
+const secretKey: string = process.env.CRYPTR_SECRET!
+
+const cryptr = new Cryptr(secretKey)
 
 function creditCardNumber() {
-  return faker.finance.creditCardNumber('################')
+  return faker.finance.creditCardNumber('#### #### #### ####')
 }
 
 function creditCardCVV() {
-  return faker.finance.creditCardCVV()
+  const cvvNumber: string = faker.finance.creditCardCVV()
+
+  return cryptr.encrypt(cvvNumber)
 }
 
 function expirationDate() {
@@ -37,12 +49,11 @@ async function hanleEmployee(employeeId: number, type: TransactionTypes) {
     }
   const fullNameArr: string[] = employee.fullName.split(' ')
 
-  const lastName: string = fullNameArr.pop()
+  const lastName: string | undefined = fullNameArr.pop()
   const [firstName, ...rest] = fullNameArr
 
   let surname: string = ''
   for (const name of rest) {
-    console.log(name)
     if (name.length >= 3) {
       surname += name[0]
     }
@@ -58,10 +69,81 @@ async function insert(payload: CardInsertData) {
   await cardRepository.insert(payload)
 }
 
+async function hanleCard(cardId: number, securityCode: string) {
+  const card = await validateCardAndReturn(cardId)
+
+  validateSecurityCode(securityCode, card.securityCode)
+
+  validateDate(card.expirationDate)
+}
+
+function validateDate(expirationDate: string) {
+  const now = dayjs().format('MM/YY')
+  const dateDiff: number = dayjs(expirationDate, 'MM/YY').diff(
+    dayjs(now, 'MM/YY')
+  )
+
+  if (dateDiff < 0) throw { code: 406, message: 'cartão expirado' }
+}
+
+function validateSecurityCode(securityCode: string, cardSecurityCode: string) {
+  const decrypt: string = cryptr.decrypt(securityCode)
+
+  if (decrypt !== cardSecurityCode)
+    throw { code: 401, message: 'código de segurança incorreto' }
+}
+
+async function validateCardAndReturn(cardId: number) {
+  const card = await cardRepository.findById(cardId)
+
+  if (card === undefined) throw { code: 404, message: 'cartão não cadastrado' }
+
+  if (card.password !== null)
+    throw { code: 403, message: 'Esse cartão já esta ativado' }
+
+  return card
+}
+
+function cryptPassword(password: string) {
+  const saltRounds: number = 10
+
+  return bcrypt.hashSync(password, saltRounds)
+}
+
+async function update(cardId: number, cardData: CardUpdateData) {
+  await cardRepository.update(cardId, cardData)
+}
+
+async function getAllCardsByEmployee(employeeId: number, password: string) {
+  const allCards = (await cardRepository.find()).filter(
+    card => card.password !== null
+  )
+
+  const cardsEmployee = allCards.filter(
+    card =>
+      card.employeeId === employeeId &&
+      bcrypt.compareSync(password, card.password!)
+  )
+
+  const cards = cardsEmployee.map(
+    ({ number, cardholderName, expirationDate, securityCode }) => {
+      const decrypt: string = cryptr.decrypt(securityCode)
+
+      return { number, cardholderName, expirationDate, securityCode: decrypt }
+    }
+  )
+
+  return { cards }
+}
+
 export default {
   creditCardNumber,
   creditCardCVV,
   hanleEmployee,
   expirationDate,
-  insert
+  insert,
+  hanleCard,
+  cryptPassword,
+  update,
+  getAllCardsByEmployee
 }

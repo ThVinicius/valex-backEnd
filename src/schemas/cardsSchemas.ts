@@ -4,7 +4,7 @@ const create = joi.object({
   employeeId: joi.number().greater(0).required(),
   type: joi
     .string()
-    .valid('groceries', 'restaurants', 'transport', 'education', 'health')
+    .valid('groceries', 'restaurant', 'transport', 'education', 'health')
     .required()
 })
 
@@ -18,7 +18,7 @@ const activate = joi.object({
 })
 
 const getCards = joi.object({
-  cardId: joi.number().greater(0).required(),
+  employeeId: joi.number().greater(0).required(),
   password: joi.string().length(4).pattern(passwordRegex).required()
 })
 

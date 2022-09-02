@@ -8,11 +8,17 @@ export const errorHandling: ErrorRequestHandler = (error, req, res, next) => {
     case 401:
       return res.status(401).send(error.message)
 
+    case 403:
+      return res.status(403).send(error.message)
+
     case 404:
       return res.status(404).send(error.message)
 
+    case 406:
+      return res.status(406).send(error.message)
+
     case 409:
-      return res.status(404).send(error.message)
+      return res.status(409).send(error.message)
 
     default:
       console.log(error)

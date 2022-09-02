@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express'
-import { findByApiKey } from '../repositories/companyRepository.js'
+import { findByApiKey } from '../repositories/companyRepository'
 
 async function verifyApiKey(req: Request, res: Response, next: NextFunction) {
-  const apiKey: string = req.header('x-api-key')
+  const apiKey: string | undefined = req.header('x-api-key')
 
   if (apiKey === undefined || apiKey.trim() === '')
     throw { code: 400, message: 'api key inválido ou inexistente' }

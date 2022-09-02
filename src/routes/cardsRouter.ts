@@ -1,8 +1,8 @@
 import { Router } from 'express'
-import schemaValidator from '../middlewares/schemaValidator.js'
-import cardsSchemas from '../schemas/cardsSchemas.js'
-import verifyApiKey from '../middlewares/verifyApiKey.js'
-import { createCard } from '../controllers/cardsController.js'
+import schemaValidator from '../middlewares/schemaValidator'
+import cardsSchemas from '../schemas/cardsSchemas'
+import verifyApiKey from '../middlewares/verifyApiKey'
+import { createCard, activate, get } from '../controllers/cardsController'
 
 const route = Router()
 
@@ -12,5 +12,9 @@ route.post(
   verifyApiKey,
   createCard
 )
+
+route.patch('/cards/activate', schemaValidator(cardsSchemas.activate), activate)
+
+route.get('/cards', schemaValidator(cardsSchemas.getCards), get)
 
 export default route

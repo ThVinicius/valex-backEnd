@@ -2,8 +2,8 @@ import express, { json } from 'express'
 import 'express-async-errors'
 import cors from 'cors'
 import dotenv from 'dotenv'
-import router from './routes/index.js'
-import { errorHandling } from './middlewares/errorHandling.js'
+import router from './routes/index'
+import { errorHandling } from './middlewares/errorHandling'
 
 const app = express()
 app.use(cors())
@@ -13,4 +13,6 @@ dotenv.config()
 app.use(router)
 app.use(errorHandling)
 
-app.listen(process.env.PORT)
+const PORT: number = Number(process.env.PORT)
+
+app.listen(PORT)

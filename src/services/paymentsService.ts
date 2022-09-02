@@ -2,10 +2,10 @@ import {
   validateCard,
   validateIsActiveCard,
   validateDate,
-  validatePassword
+  validatePassword,
+  getStatement
 } from './shared'
 import * as businessRepository from '../repositories/businessRepository'
-import * as rechargeRepository from '../repositories/rechargeRepository'
 import * as paymentsRepository from '../repositories/paymentRepository'
 
 async function hanlePayment(
@@ -28,7 +28,7 @@ async function hanlePayment(
 
   validateCardType(card.type, business.type)
 
-  const balance = await getBalance(cardId)
+  const { balance } = await getStatement(cardId)
 
   validateAmount(paymentAmount, balance)
 }
@@ -52,20 +52,6 @@ function validateCardType(cardType: string, businessType: string) {
       code: 401,
       message: `os cartões do tipo ${cardType} só transacionar com estabelecimentos do mesmo tipo`
     }
-}
-
-async function getBalance(cardId: number) {
-  const recharge = await rechargeRepository.findByCardId(cardId)
-
-  const payments = await paymentsRepository.findByCardId(cardId)
-
-  const totalRecharge = recharge.reduce((acc, curr) => acc + curr.amount, 0)
-
-  const totalPayments = payments.reduce((acc, curr) => acc + curr.amount, 0)
-
-  const balance = totalRecharge - totalPayments
-
-  return balance
 }
 
 function validateAmount(paymentAmount: number, balance: number) {

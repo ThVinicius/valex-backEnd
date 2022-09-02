@@ -63,6 +63,16 @@ export async function get(req: Request, res: Response) {
   return res.status(200).send(cardsEmployee)
 }
 
+export async function statement(req: Request, res: Response) {
+  const cardId = Number(req.params.cardId)
+
+  await cardsService.hanleStatement(cardId)
+
+  const statement = await cardsService.statement(cardId)
+
+  return res.status(200).send(statement)
+}
+
 export async function blocked(req: Request, res: Response) {
   const { cardId, password }: { cardId: number; password: string } = req.body
 

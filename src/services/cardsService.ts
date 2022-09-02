@@ -15,7 +15,8 @@ import {
   validateBlocked,
   validateCard,
   validatePassword,
-  validateIsActiveCard
+  validateIsActiveCard,
+  getStatement
 } from './shared'
 
 dotenv.config()
@@ -173,6 +174,14 @@ async function blocked(cardId: number) {
   await cardRepository.update(cardId, { isBlocked: true })
 }
 
+async function hanleStatement(cardId: number) {
+  await validateCard(cardId)
+}
+
+async function statement(cardId: number) {
+  return await getStatement(cardId)
+}
+
 export default {
   creditCardNumber,
   creditCardCVV,
@@ -186,5 +195,7 @@ export default {
   hanleBlocked,
   blocked,
   hanleUnlock,
-  unlock
+  unlock,
+  hanleStatement,
+  statement
 }

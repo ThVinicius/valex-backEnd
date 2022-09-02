@@ -1,11 +1,13 @@
 import { Router } from 'express'
 import schemaValidator from '../middlewares/schemaValidator'
 import cardsSchemas from '../schemas/cardsSchemas'
+import paramsSchemas from '../schemas/paramsSchemas'
 import verifyApiKey from '../middlewares/verifyApiKey'
 import {
   createCard,
   activate,
   get,
+  statement,
   blocked,
   unlock
 } from '../controllers/cardsController'
@@ -26,5 +28,13 @@ route.get('/cards', schemaValidator(cardsSchemas.getCards), get)
 route.patch('/blocked', schemaValidator(cardsSchemas.blockedAndUnlock), blocked)
 
 route.patch('/unlock', schemaValidator(cardsSchemas.blockedAndUnlock), unlock)
+
+const getParams = true
+
+route.get(
+  '/statement/:cardId',
+  schemaValidator(paramsSchemas.cardId, getParams),
+  statement
+)
 
 export default route

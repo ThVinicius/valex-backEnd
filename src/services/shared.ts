@@ -1,6 +1,8 @@
 import dayjs from 'dayjs'
 import bcrypt from 'bcrypt'
 import * as cardsRepository from '../repositories/cardRepository'
+import * as rechargeRepository from '../repositories/rechargeRepository'
+import * as paymentRepository from '../repositories/paymentRepository'
 
 function validateDate(expirationDate: string) {
   const now = dayjs().format('MM/YY')
@@ -37,10 +39,25 @@ function validateBlocked(
   if (blocked) throw error
 }
 
+async function getStatement(cardId: number) {
+  const recharges = await rechargeRepository.findByCardId(cardId)
+
+  const transactions = await paymentRepository.findByCardId(cardId)
+
+  const totalRecharge = recharges.reduce((acc, curr) => acc + curr.amount, 0)
+
+  const totalPayments = transactions.reduce((acc, curr) => acc + curr.amount, 0)
+
+  const balance = totalRecharge - totalPayments
+
+  return { balance, transactions, recharges }
+}
+
 export {
   validateDate,
   validateCard,
   validateIsActiveCard,
   validateBlocked,
-  validatePassword
+  validatePassword,
+  getStatement
 }

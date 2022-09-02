@@ -10,6 +10,7 @@ import {
   CardInsertData,
   CardUpdateData
 } from '../repositories/cardRepository'
+import { validateDate } from './shared'
 
 dotenv.config()
 
@@ -77,15 +78,6 @@ async function hanleCard(cardId: number, securityCode: string) {
   validateDate(card.expirationDate)
 }
 
-function validateDate(expirationDate: string) {
-  const now = dayjs().format('MM/YY')
-  const dateDiff: number = dayjs(expirationDate, 'MM/YY').diff(
-    dayjs(now, 'MM/YY')
-  )
-
-  if (dateDiff < 0) throw { code: 406, message: 'cartão expirado' }
-}
-
 function validateSecurityCode(securityCode: string, cardSecurityCode: string) {
   const decrypt: string = cryptr.decrypt(securityCode)
 
@@ -145,5 +137,6 @@ export default {
   hanleCard,
   cryptPassword,
   update,
-  getAllCardsByEmployee
+  getAllCardsByEmployee,
+  validateDate
 }

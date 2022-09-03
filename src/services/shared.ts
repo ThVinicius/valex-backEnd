@@ -68,6 +68,13 @@ function validateSecurityCode(securityCode: string, cardSecurityCode: string) {
     throw { code: 401, message: 'código de segurança incorreto' }
 }
 
+function validateIsVirtualCard(
+  isVirtual: boolean,
+  error: { code: number; message: string }
+) {
+  if (!isVirtual) throw error
+}
+
 export {
   validateDate,
   validateCard,
@@ -75,5 +82,6 @@ export {
   validateBlocked,
   validatePassword,
   getStatement,
-  validateSecurityCode
+  validateSecurityCode,
+  validateIsVirtualCard
 }

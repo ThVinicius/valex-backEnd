@@ -4,7 +4,8 @@ import {
   validateDate,
   validatePassword,
   getStatement,
-  validateSecurityCode
+  validateSecurityCode,
+  validateIsVirtualCard
 } from './shared'
 import * as businessRepository from '../repositories/businessRepository'
 import * as paymentsRepository from '../repositories/paymentRepository'
@@ -17,6 +18,13 @@ async function hanlePayment(
   paymentAmount: number
 ) {
   const card = await validateCard(cardId)
+
+  const error = {
+    code: 406,
+    message: 'Cartões virtuais não podem ser utilizados em compras POS'
+  }
+
+  validateIsVirtualCard(!card.isVirtual, error)
 
   validateIsActiveCard(card.password)
 

@@ -102,3 +102,13 @@ export async function virtual(req: Request, res: Response) {
 
   return res.sendStatus(201)
 }
+
+export async function remove(req: Request, res: Response) {
+  const { cardId, password }: { cardId: number; password: string } = req.body
+
+  await cardsService.hanleRemove(cardId, password)
+
+  await cardsService.remove(cardId)
+
+  return res.sendStatus(200)
+}

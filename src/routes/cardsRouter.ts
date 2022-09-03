@@ -10,7 +10,8 @@ import {
   statement,
   blocked,
   unlock,
-  virtual
+  virtual,
+  remove
 } from '../controllers/cardsController'
 
 const route = Router()
@@ -38,10 +39,8 @@ route.get(
   statement
 )
 
-route.post(
-  '/cards/virtual',
-  schemaValidator(cardsSchemas.createVirtual),
-  virtual
-)
+route.post('/cards/virtual', schemaValidator(cardsSchemas.virtual), virtual)
+
+route.delete('/cards/virtual', schemaValidator(cardsSchemas.virtual), remove)
 
 export default route

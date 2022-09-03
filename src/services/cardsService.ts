@@ -17,7 +17,8 @@ import {
   validatePassword,
   validateIsActiveCard,
   getStatement,
-  validateSecurityCode
+  validateSecurityCode,
+  validateIsVirtualCard
 } from './shared'
 
 dotenv.config()
@@ -213,6 +214,23 @@ async function insertVirtual(card: cardRepository.Card) {
   await cardRepository.insert(payload)
 }
 
+async function hanleRemove(cardId: number, password: string) {
+  const card = await validateCard(cardId)
+
+  const error = {
+    code: 406,
+    message: 'somente cartões virtuais podem ser deletados'
+  }
+
+  validateIsVirtualCard(card.isVirtual, error)
+
+  validatePassword(password, card.password!)
+}
+
+async function remove(cardId: number) {
+  await cardRepository.remove(cardId)
+}
+
 export default {
   creditCardNumber,
   creditCardCVV,
@@ -230,5 +248,7 @@ export default {
   hanleStatement,
   statement,
   hanleVirtual,
-  insertVirtual
+  insertVirtual,
+  hanleRemove,
+  remove
 }

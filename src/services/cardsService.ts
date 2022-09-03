@@ -36,7 +36,7 @@ function creditCardCVV() {
   return cryptr.encrypt(cvvNumber)
 }
 
-function expirationDate() {
+function createExpirationDate() {
   return dayjs().add(5, 'year').format('MM/YY')
 }
 
@@ -176,11 +176,48 @@ async function statement(cardId: number) {
   return await getStatement(cardId)
 }
 
+async function hanleVirtual(cardId: number, password: string) {
+  const card = await validateCard(cardId)
+
+  validateIsActiveCard(card.password)
+
+  validatePassword(password, card.password!)
+
+  return card
+}
+
+async function insertVirtual(card: cardRepository.Card) {
+  const { employeeId, cardholderName, password, type, id } = card
+
+  const number = faker.finance
+    .creditCardNumber('mastercard')
+    .replaceAll('-', ' ')
+
+  const securityCode = cryptr.encrypt(creditCardCVV())
+
+  const expirationDate = createExpirationDate()
+
+  const payload = {
+    employeeId,
+    number,
+    cardholderName,
+    securityCode,
+    expirationDate,
+    password,
+    isVirtual: true,
+    originalCardId: id,
+    isBlocked: false,
+    type
+  }
+
+  await cardRepository.insert(payload)
+}
+
 export default {
   creditCardNumber,
   creditCardCVV,
   hanleEmployee,
-  expirationDate,
+  createExpirationDate,
   insert,
   hanleCard,
   cryptPassword,
@@ -191,5 +228,7 @@ export default {
   hanleUnlock,
   unlock,
   hanleStatement,
-  statement
+  statement,
+  hanleVirtual,
+  insertVirtual
 }

@@ -29,10 +29,16 @@ const blockedAndUnlock = joi.object({
   password: joi.string().length(4).pattern(passwordRegex).required()
 })
 
+const createVirtual = joi.object({
+  cardId: joi.number().greater(0).required(),
+  password: joi.string().length(4).pattern(passwordRegex).required()
+})
+
 export default {
   create,
   activate,
   getCards,
   balanceAndTransactions,
-  blockedAndUnlock
+  blockedAndUnlock,
+  createVirtual
 }

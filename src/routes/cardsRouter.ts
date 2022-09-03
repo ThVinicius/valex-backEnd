@@ -9,7 +9,8 @@ import {
   get,
   statement,
   blocked,
-  unlock
+  unlock,
+  virtual
 } from '../controllers/cardsController'
 
 const route = Router()
@@ -35,6 +36,12 @@ route.get(
   '/statement/:cardId',
   schemaValidator(paramsSchemas.cardId, isParams),
   statement
+)
+
+route.post(
+  '/cards/virtual',
+  schemaValidator(cardsSchemas.createVirtual),
+  virtual
 )
 
 export default route

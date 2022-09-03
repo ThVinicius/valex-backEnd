@@ -13,7 +13,7 @@ export async function createCard(req: Request, res: Response) {
 
   const number: string = cardsService.creditCardNumber()
   const securityCode: string = cardsService.creditCardCVV()
-  const expirationDate: string = cardsService.expirationDate()
+  const expirationDate: string = cardsService.createExpirationDate()
 
   const payload = {
     employeeId,
@@ -91,4 +91,14 @@ export async function unlock(req: Request, res: Response) {
   await cardsService.unlock(cardId)
 
   return res.sendStatus(200)
+}
+
+export async function virtual(req: Request, res: Response) {
+  const { cardId, password }: { cardId: number; password: string } = req.body
+
+  const card = await cardsService.hanleVirtual(cardId, password)
+
+  await cardsService.insertVirtual(card)
+
+  return res.sendStatus(201)
 }

@@ -1,7 +1,5 @@
 import { faker } from '@faker-js/faker'
-import Cryptr from 'cryptr'
 import bcrypt from 'bcrypt'
-import dotenv from 'dotenv'
 import dayjs from 'dayjs'
 import * as employeeRepository from '../repositories/employeeRepository'
 import * as cardRepository from '../repositories/cardRepository'
@@ -18,14 +16,11 @@ import {
   validateIsActiveCard,
   getStatement,
   validateSecurityCode,
-  validateIsVirtualCard
+  validateIsVirtualCard,
+  cryptConfig
 } from './shared'
 
-dotenv.config()
-
-const secretKey: string = process.env.CRYPTR_SECRET!
-
-const cryptr = new Cryptr(secretKey)
+const cryptr = cryptConfig()
 
 function creditCardNumber() {
   return faker.finance.creditCardNumber('#### #### #### ####')
@@ -34,7 +29,9 @@ function creditCardNumber() {
 function creditCardCVV() {
   const cvvNumber: string = faker.finance.creditCardCVV()
 
-  return cryptr.encrypt(cvvNumber)
+  const securityCode = cryptr.encrypt(cvvNumber)
+
+  return { securityCode, cvvNumber }
 }
 
 function createExpirationDate() {
@@ -80,22 +77,18 @@ async function insert(payload: CardInsertData) {
 }
 
 async function hanleCard(cardId: number, securityCode: string) {
-  const card = await validateCardAndReturn(cardId)
+  const card = await validateCard(cardId)
+
+  const error = {
+    code: 403,
+    message: 'cartões virtuais não precisam ser ativados'
+  }
+
+  validateIsVirtualCard(!card.isVirtual, error)
 
   validateSecurityCode(securityCode, card.securityCode)
 
   validateDate(card.expirationDate)
-}
-
-async function validateCardAndReturn(cardId: number) {
-  const card = await cardRepository.findById(cardId)
-
-  if (card === undefined) throw { code: 404, message: 'cartão não cadastrado' }
-
-  if (card.password !== null)
-    throw { code: 403, message: 'Esse cartão já esta ativado' }
-
-  return card
 }
 
 function cryptPassword(password: string) {
@@ -180,6 +173,14 @@ async function statement(cardId: number) {
 async function hanleVirtual(cardId: number, password: string) {
   const card = await validateCard(cardId)
 
+  const error = {
+    code: 403,
+    message:
+      'Cartões virtuais só podem ser vinculados a cartões originais cadastrados'
+  }
+
+  validateIsVirtualCard(!card.isVirtual, error)
+
   validateIsActiveCard(card.password)
 
   validatePassword(password, card.password!)
@@ -194,7 +195,7 @@ async function insertVirtual(card: cardRepository.Card) {
     .creditCardNumber('mastercard')
     .replaceAll('-', ' ')
 
-  const securityCode = cryptr.encrypt(creditCardCVV())
+  const { securityCode, cvvNumber } = creditCardCVV()
 
   const expirationDate = createExpirationDate()
 
@@ -211,7 +212,17 @@ async function insertVirtual(card: cardRepository.Card) {
     type
   }
 
+  const cardData = {
+    number,
+    cardholderName,
+    securityCode: cvvNumber,
+    expirationDate,
+    type
+  }
+
   await cardRepository.insert(payload)
+
+  return cardData
 }
 
 async function hanleRemove(cardId: number, password: string) {

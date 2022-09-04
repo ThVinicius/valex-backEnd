@@ -12,7 +12,7 @@ export async function createCard(req: Request, res: Response) {
   )
 
   const number: string = cardsService.creditCardNumber()
-  const securityCode: string = cardsService.creditCardCVV()
+  const { securityCode, cvvNumber } = cardsService.creditCardCVV()
   const expirationDate: string = cardsService.createExpirationDate()
 
   const payload = {
@@ -30,7 +30,15 @@ export async function createCard(req: Request, res: Response) {
 
   await cardsService.insert(payload)
 
-  return res.sendStatus(201)
+  const cardData = {
+    number,
+    cardholderName,
+    securityCode: cvvNumber,
+    expirationDate,
+    type
+  }
+
+  return res.status(201).send(cardData)
 }
 
 export async function activate(req: Request, res: Response) {
@@ -98,9 +106,9 @@ export async function virtual(req: Request, res: Response) {
 
   const card = await cardsService.hanleVirtual(cardId, password)
 
-  await cardsService.insertVirtual(card)
+  const cardData = await cardsService.insertVirtual(card)
 
-  return res.sendStatus(201)
+  return res.status(201).send(cardData)
 }
 
 export async function remove(req: Request, res: Response) {

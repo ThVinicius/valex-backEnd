@@ -118,6 +118,8 @@ async function validateCardPaymentOnline(
   if (card === undefined)
     throw { code: 404, message: 'cartão não cadastrado ou dados incorretos' }
 
+  card.id = card.isVirtual ? card.originalCardId! : card.id
+
   return card
 }
 

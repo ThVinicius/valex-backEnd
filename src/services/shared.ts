@@ -8,9 +8,13 @@ import * as paymentRepository from '../repositories/paymentRepository'
 
 dotenv.config()
 
-const secretKey: string = process.env.CRYPTR_SECRET!
+const cryptr = cryptConfig()
 
-const cryptr = new Cryptr(secretKey)
+function cryptConfig() {
+  const secretKey: string = process.env.CRYPTR_SECRET!
+
+  return new Cryptr(secretKey)
+}
 
 function validateDate(expirationDate: string) {
   const now = dayjs().format('MM/YY')
@@ -83,5 +87,6 @@ export {
   validatePassword,
   getStatement,
   validateSecurityCode,
-  validateIsVirtualCard
+  validateIsVirtualCard,
+  cryptConfig
 }

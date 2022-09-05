@@ -4,7 +4,7 @@
 
 ### Rota **POST** `/cards`
 
-Rota para criar cartões físicos
+Rota para criar cartões originais (físicos)
 
 - Deve receber (pelo body da request), os parâmetros **employeeId** e **type**:
 
@@ -36,6 +36,7 @@ Rota para criar cartões físicos
 
   ```jsx
   {
+    cardId: 1
     number: "8933 0179 8650 5801",
     cardholderName: "CICLANA M MADEIRA",
     securityCode: "591",
@@ -72,11 +73,13 @@ Rota para criar cartões físicos
 - Retorna os dados do cartão criado:
   ```jsx
   {
-  number: "6771 8920 3306 5669",
-  cardholderName: "FULANO R SILVA",
-  securityCode: "602",
-  expirationDate: "09/27",
-  type: "restaurant"
+    cardId: 2,
+    originalCardId: 1,
+    number: "6771 8920 3306 5669",
+    cardholderName: "FULANO R SILVA",
+    securityCode: "602",
+    expirationDate: "09/27",
+    type: "restaurant"
   }
   ```
 
@@ -109,7 +112,7 @@ Rota para deletar cartões virtuais
 
 ### Rota **PATCH** `/cards/activate`
 
-Rota para ativar cartões físicos
+Rota para ativar cartões originais (físicos)
 
 - Deve receber (pelo body da request), os parâmetros **cardId**, **securityCode** e **password**:
 

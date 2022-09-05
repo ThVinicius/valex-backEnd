@@ -325,6 +325,6 @@ Rota para compras online
   - Retorna `402` caso o saldo do cartão seja insuficiente para a compra
   - Retorna `403` caso o cartão não esteja ativado
   - Retorna `404` caso o `number`, `cardholderName` e `expirationDate` estejam incorretos
-  - Retorna `406` caso o cartão esteja expirado **ou** caso seja um cartão virtual
+  - Retorna `406` caso o cartão esteja expirado
 
 - Retorna status code `201`

@@ -4,12 +4,14 @@
 
 ### Rota **POST** `/cards`
 
+Rota para criar cartões físicos
+
 - Deve receber (pelo body da request), os parâmetros **employeeId** e **type**:
 
   ```jsx
   {
-      employeeId: 1,
-  	type: "groceries"
+    employeeId: 1,
+    type: "groceries"
   }
   ```
 
@@ -42,14 +44,16 @@
   }
   ```
 
-  ### Rota **POST** `/cards/virtual` (criar cartão virtual)
+  ### Rota **POST** `/cards/virtual`
+
+  Rota para criar cartões virtuais
 
 - Deve receber (pelo body da request), os parâmetros **cardId** e **password**:
 
   ```jsx
   {
-      cardId: 1,
-  	password: "1234"
+    cardId: 1,
+    password: "1234"
   }
   ```
 
@@ -76,14 +80,16 @@
   }
   ```
 
-### Rota **DELETE** `/cards/virtual` (deletar cartão virtual)
+### Rota **DELETE** `/cards/virtual`
+
+Rota para deletar cartões virtuais
 
 - Deve receber (pelo body da request), os parâmetros **cardId** e **password**:
 
   ```jsx
   {
-      cardId: 2,
-  	password: "1234"
+    cardId: 2,
+    password: "1234"
   }
   ```
 
@@ -102,6 +108,8 @@
 - Retorna status code `200`
 
 ### Rota **PATCH** `/cards/activate`
+
+Rota para ativar cartões físicos
 
 - Deve receber (pelo body da request), os parâmetros **cardId**, **securityCode** e **password**:
 
@@ -131,6 +139,8 @@
 
 ### Rota **PATCH** `/blocked`
 
+Rota para bloquear cartões físicos e virtuais
+
 - Deve receber (pelo body da request), os parâmetros **cardId** e **password**:
 
   ```jsx
@@ -157,6 +167,8 @@
 - Retorna status code `200`
 
 ### Rota **PATCH** `/unlock`
+
+Rota para desbloquear cartões físicos e virtuais
 
 - Deve receber (pelo body da request), os parâmetros **cardId** e **password**:
 
@@ -185,6 +197,8 @@
 
 ### Rota **GET** `/statement/:cardId`
 
+Rota para buscar o extrato do cartão original (físico)
+
 - Deve receber (pelo params da request), o parâmetro **cardId** (number maior que 0):
 
   - Retorna `400` caso os dados estejam no formato inválido
@@ -207,6 +221,8 @@
 ## Rotas de compra e recarga:
 
 ### Rota POST `/recharges`
+
+Rota para recarregar cartões originais (físicos)
 
 - Deve receber (pelo body da request), os parâmetros **cardId** e **amount**:
 
@@ -231,7 +247,9 @@
 
 - Retorna status code `201`
 
-### Rota POST `/payments` (compras em POS)
+### Rota POST `/payments`
+
+Rota para compras em POS
 
 - Deve receber (pelo body da request), os parâmetros **cardId**, **businessId**, **password** e **amount**:
 
@@ -262,7 +280,9 @@
 
 - Retorna status code `201`
 
-### Rota POST `/payments/online` (compras online)
+### Rota POST `/payments/online`
+
+Rota para compras online
 
 - Deve receber (pelo body da request), os parâmetros **number**, **cardholderName**, **expirationDate**, **securityCode**, **businessId** e **amount**:
 

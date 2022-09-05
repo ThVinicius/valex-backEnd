@@ -73,7 +73,9 @@ async function hanleEmployee(employeeId: number, type: TransactionTypes) {
 }
 
 async function insert(payload: CardInsertData) {
-  await cardRepository.insert(payload)
+  const { rows } = await cardRepository.insert(payload)
+
+  return rows[0]
 }
 
 async function hanleCard(cardId: number, securityCode: string) {
@@ -216,15 +218,17 @@ async function insertVirtual(card: cardRepository.Card) {
     type
   }
 
+  const { rows } = await cardRepository.insert(payload)
+
   const cardData = {
+    cardId: rows[0].id,
+    originalCardId: id,
     number,
     cardholderName,
     securityCode: cvvNumber,
     expirationDate,
     type
   }
-
-  await cardRepository.insert(payload)
 
   return cardData
 }

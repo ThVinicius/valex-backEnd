@@ -28,9 +28,10 @@ export async function createCard(req: Request, res: Response) {
     type
   }
 
-  await cardsService.insert(payload)
+  const { id: cardId } = await cardsService.insert(payload)
 
   const cardData = {
+    cardId,
     number,
     cardholderName,
     securityCode: cvvNumber,

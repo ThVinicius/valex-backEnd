@@ -163,7 +163,11 @@ async function blocked(cardId: number) {
 }
 
 async function hanleStatement(cardId: number) {
-  await validateCard(cardId)
+  const card = await validateCard(cardId)
+
+  if (card.isVirtual) card.id = card.originalCardId!
+
+  return card
 }
 
 async function statement(cardId: number) {

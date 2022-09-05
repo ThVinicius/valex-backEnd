@@ -74,9 +74,9 @@ export async function get(req: Request, res: Response) {
 export async function statement(req: Request, res: Response) {
   const cardId = Number(req.params.cardId)
 
-  await cardsService.hanleStatement(cardId)
+  const card = await cardsService.hanleStatement(cardId)
 
-  const statement = await cardsService.statement(cardId)
+  const statement = await cardsService.statement(card.id)
 
   return res.status(200).send(statement)
 }

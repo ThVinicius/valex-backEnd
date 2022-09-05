@@ -87,6 +87,8 @@ async function hanlePaymentOnline(
     expirationDate
   )
 
+  validateIsActiveCard(card.password)
+
   validateSecurityCode(securityCode, card.securityCode)
 
   validateDate(card.expirationDate)

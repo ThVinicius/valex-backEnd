@@ -227,7 +227,16 @@ Rota para buscar o extrato do cartão original (físico)
 
 Rota para recarregar cartões originais (físicos)
 
-- Deve receber (pelo body da request), os parâmetros **cardId** e **amount**:
+- Deve receber (pelo body da request), os parâmetros **cardId** e **amount** e a **x-api-key** no headers:
+
+  - Deve receber no headers uma `x-api-key` válida:
+
+    ```jsx
+    x-api-key: zadKLNx.DzvOVjQH01TumGl2urPjPQSxUbf67vs0
+    ```
+
+    - Retorna `400` caso não seja mandada no formato correto.
+    - Retorna `401` caso não seja uma api-key cadastrada no banco
 
   ```jsx
   {

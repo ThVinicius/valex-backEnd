@@ -4,11 +4,12 @@ services:
     container_name: valex_postgres
     restart: always
     ports:
-      - 6022:5432
+      - 5433:5433
     env_file:
       - .env
     volumes:
       - pg:/var/lib/postgresql/data
+    command: postgres -p 5433
     
   valex_node:
     container_name: valex_node

@@ -328,3 +328,29 @@ Rota para compras online
   - Retorna `406` caso o cartão esteja expirado
 
 - Retorna status code `201`
+
+#
+
+## Variaveis de ambiente
+
+- `CRYPTR_SECRET`
+
+  - qualquer string
+
+- `MODE=DEV`
+
+- `POSTGRES_USERNAME=postgres`
+
+- `POSTGRES_PASSWORD`
+
+  - Qualquer string
+
+- `POSTGRES_HOST`
+
+  - localhost caso esteja rodando localmente
+
+- `POSTGRES_PORT=5432`
+
+- `POSTGRES_DATABASE=valex`
+
+- `DATABASE_URL=postgres://${POSTGRES_USERNAME}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DATABASE}?schema=public`

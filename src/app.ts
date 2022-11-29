@@ -13,6 +13,6 @@ dotenv.config()
 app.use(router)
 app.use(errorHandling)
 
-const PORT: number = Number(process.env.PORT)
+const PORT: number = Number(process.env.PORT) || 4000
 
-app.listen(PORT)
+app.listen(PORT, () => console.log(`Servidor na porta ${PORT}`))
